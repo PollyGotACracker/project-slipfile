@@ -1,0 +1,86 @@
+# ============================================================
+# Preview 테스트 & 배포 워크플로우
+# feature → develop PR이 열렸을 때/commit이 추가될 때 실행
+# ============================================================
+name: Deploy Preview
+
+on:
+  pull_request:
+    branches: [develop]
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+
+jobs:
+  test-and-deploy:
+    name: Test & Deploy Preview
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      # 레포지토리 코드를 가상머신에 체크아웃
+      - uses: actions/checkout@v4
+
+      # pnpm 설치 (pnpm/action-setup)
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10
+
+      # Node.js 환경 설정 (pnpm 캐싱 사용)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      # 프로젝트 의존성 설치 (npm ci)
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 테스트
+      # 테스트가 통과하면 계속 실행, 실패하면 여기서 중단
+      - name: Run tests
+        run: pnpm test
+
+      # Vercel CLI 설치
+      - name: Install Vercel CLI
+        run: pnpm install -g vercel@latest
+
+      # Preview Build
+      - name: Preview Build
+        run: |
+          vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+          vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Preview Deploy
+      # GITHUB_OUTPUT 환경변수에 배포 URL 저장
+      - name: Deploy
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> $GITHUB_OUTPUT
+
+      # 배포 완료 시각 저장 자동 세팅
+      - name: Get current Time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: "YYYY년 MM월 DD일 HH시 mm분"
+          utcOffset: "+09:00"
+
+      # Preview 댓글 추가
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🧷 Preview: ${{ steps.deploy.outputs.url }}
+              ⏰ 배포 시각: ${{ steps.current-time.outputs.formattedTime }}`
+            })
