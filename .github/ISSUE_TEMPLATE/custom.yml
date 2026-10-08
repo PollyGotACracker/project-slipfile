@@ -1,24 +1,21 @@
-name: Custom Issue
+name: Custom Issue Template
 description: 커스텀 이슈
-title: '[CUSTOM] 제목'
+title: "[CUSTOM] 제목"
 labels: []
 assignees: []
 body:
-- type: textarea
-  id: issue-title
-  attributes:
-    label: 📝 제목
-    description: 이슈의 내용을 간결하게 나타내는 제목을 작성합니다.
-    placeholder: ''
-- type: textarea
-  id: details
-  attributes:
-    label: 📄 설명
-    description: 이슈의 내용과 필요한 작업을 구체적으로 작성합니다.
-    placeholder: ''
-- type: textarea
-  id: references
-  attributes:
-    label: ℹ️ 참고
-    description: 관련 문서, 링크 등 참고할 내용을 작성합니다.
-    placeholder: ''
+  - type: textarea
+    id: issue-title
+    attributes:
+      label: 📝 제목
+      description: 이슈의 내용을 간결하게 나타내는 제목을 작성합니다.
+  - type: textarea
+    id: details
+    attributes:
+      label: 📄 설명
+      description: 이슈의 내용과 필요한 작업을 구체적으로 작성합니다.
+  - type: textarea
+    id: references
+    attributes:
+      label: ℹ️ 참고
+      description: 관련 문서, 링크 등 참고할 내용을 작성합니다.

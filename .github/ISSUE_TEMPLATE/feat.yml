@@ -1,4 +1,4 @@
-name: Feat
+name: Feat Template
 description: 기능 추가 또는 개선
 title: "[FEAT] 기능 제목"
 labels:
@@ -10,7 +10,6 @@ body:
     attributes:
       label: 📌 목적
       description: 추가하거나 개선하려는 기능의 목적을 작성합니다.
-      placeholder: ""
   - type: textarea
     id: requirements
     attributes:
@@ -25,4 +24,3 @@ body:
     attributes:
       label: ℹ️ 참고
       description: 관련 문서, 디자인, 이슈 등 참고할 내용을 작성합니다.
-      placeholder: ""

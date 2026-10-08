@@ -1,37 +1,32 @@
-name: Test
+name: Test Template
 description: 기능 또는 애플리케이션 테스트 추가
-title: '[TEST] 테스트 항목'
+title: "[TEST] 테스트 항목"
 labels:
-- test
+  - test
 assignees: []
 body:
-- type: textarea
-  id: test-target
-  attributes:
-    label: 🔍 테스트 대상
-    description: 테스트할 기능이나 대상을 작성합니다.
-    placeholder: ''
-- type: textarea
-  id: test-details
-  attributes:
-    label: 🧪 테스트 내용
-    description: 수행할 테스트 시나리오와 조건을 작성합니다.
-    placeholder: ''
-- type: textarea
-  id: expected-results
-  attributes:
-    label: ✔️ 기대 결과
-    description: 테스트가 정상적으로 통과했을 때의 결과를 작성합니다.
-    placeholder: ''
-- type: textarea
-  id: failure-criteria
-  attributes:
-    label: ❌ 실패 기준
-    description: 테스트가 실패로 판단되는 조건을 작성합니다.
-    placeholder: ''
-- type: textarea
-  id: references
-  attributes:
-    label: ℹ️ 참고
-    description: 테스트 환경, 관련 이슈 등 참고할 내용을 작성합니다.
-    placeholder: ''
+  - type: textarea
+    id: test-target
+    attributes:
+      label: 🔍 테스트 대상
+      description: 테스트할 기능이나 대상을 작성합니다.
+  - type: textarea
+    id: test-details
+    attributes:
+      label: 🧪 테스트 내용
+      description: 수행할 테스트 시나리오와 조건을 작성합니다.
+  - type: textarea
+    id: expected-results
+    attributes:
+      label: ✔️ 기대 결과
+      description: 테스트가 정상적으로 통과했을 때의 결과를 작성합니다.
+  - type: textarea
+    id: failure-criteria
+    attributes:
+      label: ❌ 실패 기준
+      description: 테스트가 실패로 판단되는 조건을 작성합니다.
+  - type: textarea
+    id: references
+    attributes:
+      label: ℹ️ 참고
+      description: 테스트 환경, 관련 이슈 등 참고할 내용을 작성합니다.
