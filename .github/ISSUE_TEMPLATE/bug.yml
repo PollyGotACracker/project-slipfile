@@ -1,0 +1,46 @@
+name: Bug
+description: 버그 수정
+title: '[BUG] 버그 제목'
+labels:
+- bug
+assignees: []
+body:
+- type: textarea
+  id: bug-description
+  attributes:
+    label: 🐞 버그 설명
+    description: 발생한 문제와 현재 상황을 간단하게 작성합니다.
+    placeholder: ''
+- type: textarea
+  id: reproduction-steps
+  attributes:
+    label: 🔁 재현 방법
+    description: 버그를 재현할 수 있는 절차를 순서대로 작성합니다.
+    placeholder: ''
+- type: textarea
+  id: expected-behavior
+  attributes:
+    label: ✔️ 기대 동작
+    description: 정상적으로 동작했을 때의 결과를 작성합니다.
+    placeholder: ''
+- type: textarea
+  id: actual-behavior
+  attributes:
+    label: ❌ 실제 동작
+    description: 현재 실제로 발생하는 결과를 작성합니다.
+    placeholder: ''
+- type: textarea
+  id: environment
+  attributes:
+    label: ⚙️ 환경
+    description: 버그가 발생한 실행 환경을 작성합니다.
+    placeholder: |
+      - OS:
+      - Browser:
+      - Environment:
+- type: textarea
+  id: references
+  attributes:
+    label: ℹ️ 참고
+    description: 스크린샷, 로그, 관련 링크 등 참고할 내용을 작성합니다.
+    placeholder: ''
