@@ -1,7 +1,7 @@
 import { ThemeToggle } from "@/components/layouts/ThemeToggle";
 import { Wordmark } from "@/components/layouts/Wordmark";
-import { CreateRoomButton } from "@/components/landing/CreateRoomButton";
-import { JoinRoomForm } from "@/components/landing/JoinRoomForm";
+import { CreateChannelButton } from "@/components/landing/CreateChannelButton";
+import { JoinChannelForm } from "@/components/landing/JoinChannelForm";
 import { LandingBackground } from "@/components/landing/LandingBackground";
 
 export function LandingView() {
@@ -26,13 +26,13 @@ export function LandingView() {
         </div>
         <div className="flex-[4]" />
         <div className="flex w-full max-w-xs flex-col items-center gap-5">
-          <CreateRoomButton />
+          <CreateChannelButton />
           <div className="flex w-full items-center gap-3 text-xs text-muted-foreground">
             <span className="h-px flex-1 bg-border" />
             또는
             <span className="h-px flex-1 bg-border" />
           </div>
-          <JoinRoomForm />
+          <JoinChannelForm />
         </div>
         <div className="flex-[4]" />
       </div>

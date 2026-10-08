@@ -1,4 +1,4 @@
-/** Room 채팅에 표시되는 메시지 한 건을 나타내는 타입. */
+/** Channel 채팅에 표시되는 메시지 한 건을 나타내는 타입. */
 export interface ChatMessage {
   /** 메시지를 식별하는 고유 id. */
   id: string;
