@@ -56,6 +56,16 @@ export function saveParticipantSession(
 }
 
 /**
+ * 직접 퇴장한 Channel의 참여자 세션을 삭제하는 함수.
+ * @param channelId 퇴장할 Channel 코드.
+ * @returns 반환값 없음.
+ * @throws sessionStorage에 접근하거나 세션을 삭제할 수 없는 경우.
+ */
+export function removeParticipantSession(channelId: string): void {
+  sessionStorage.removeItem(getStorageKey(channelId));
+}
+
+/**
  * 기존 참여자 세션의 닉네임·아바타·호스트 제목을 갱신하거나 새로 생성하는 함수.
  * host 판별 기준이 깨지지 않도록 기존 세션은 덮어쓰지 않는다.
  */
