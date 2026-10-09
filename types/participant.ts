@@ -34,10 +34,12 @@ export interface ParticipantSession {
   avatarIndex: number;
   /** 이 channel에 최초로 합류한 시각(ms 단위 타임스탬프). */
   joinedAt: number;
+  /** 호스트가 설정한 방 제목. Presence로 게스트에게 전달하는 값. */
+  channelTitle?: string;
   /**
    * "이 channel을 만들었다"는 힌트일 뿐, 진짜 권한의 근거는 아닌 값.
    * `participantId`/`joinedAt`처럼 세션 최초 생성 시점에만 고정된다.
-   * TODO: Presence 참여 순서 연동 후 그 값으로 대체한다.
+   * 방 연결 시 Presence의 기존 호스트 여부와 함께 생성·입장 의도를 판정한다.
    */
   isHost: boolean;
 }

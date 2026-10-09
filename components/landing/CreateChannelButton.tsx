@@ -4,7 +4,8 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { generateMockChannelCode, getChannelJoinPath } from "@/utils/channel";
+import { generateChannelCode } from "@/supabase/realtime";
+import { getChannelJoinPath } from "@/utils/channel";
 
 export function CreateChannelButton() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export function CreateChannelButton() {
 
   function handleCreateChannel() {
     setIsCreating(true);
-    const code = generateMockChannelCode();
+    const code = generateChannelCode();
     router.push(getChannelJoinPath(code, { asHost: true }));
   }
 
@@ -23,7 +24,7 @@ export function CreateChannelButton() {
       disabled={isCreating}
       className="h-12 gap-2 bg-primary-gradient px-7 text-base hover:brightness-110"
     >
-      Channel 만들기
+      채널 만들기
       {isCreating ? (
         <Loader2 className="size-4 animate-spin" />
       ) : (

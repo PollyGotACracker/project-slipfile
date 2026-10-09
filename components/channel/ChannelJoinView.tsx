@@ -21,8 +21,7 @@ import { getChannelPath } from "@/utils/channel";
 interface ChannelJoinViewProps {
   channelId: string;
   /**
-   * "방금 이 channel을 만들었다"는 안내 문구용 힌트일 뿐, 이 화면에서는 참고용으로만 쓰이는 값.
-   * TODO: 실제 호스트 여부는 Presence 참여 순서 연동 후 그 값으로 계산한다.
+   * 방 연결 모듈에서 기존 호스트의 Presence를 확인한 뒤 생성·입장을 판정한다.
    */
   isHost: boolean;
 }
@@ -31,8 +30,6 @@ export function ChannelJoinView({ channelId, isHost }: ChannelJoinViewProps) {
   const router = useRouter();
   const [nickname, setNickname] = useState("");
   const [avatarIndex, setAvatarIndex] = useState(0);
-  // TODO: 지금은 입력만 받고 저장하지 않는다.
-  // 실제로 Channel에 반영하려면 sessionStorage 저장 및 게스트 전달(Presence 연동) 구현이 필요하다.
   const [title, setTitle] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isJoining, setIsJoining] = useState(false);
@@ -52,6 +49,7 @@ export function ChannelJoinView({ channelId, isHost }: ChannelJoinViewProps) {
     if (sessionSnapshot.session) {
       setNickname(sessionSnapshot.session.nickname);
       setAvatarIndex(sessionSnapshot.session.avatarIndex);
+      setTitle(sessionSnapshot.session.channelTitle ?? "");
     } else {
       setAvatarIndex(getRandomAvatarIndex());
     }
@@ -65,7 +63,7 @@ export function ChannelJoinView({ channelId, isHost }: ChannelJoinViewProps) {
     }
     setError(null);
     setIsJoining(true);
-    upsertParticipantSession(channelId, trimmed, avatarIndex, isHost);
+    upsertParticipantSession(channelId, trimmed, avatarIndex, isHost, title);
     router.push(getChannelPath(channelId));
   }
 
@@ -80,12 +78,12 @@ export function ChannelJoinView({ channelId, isHost }: ChannelJoinViewProps) {
           <h1 className="break-keep text-3xl font-semibold tracking-tight">
             <span className="font-mono">{channelId}</span>{" "}
             <span className="whitespace-nowrap">
-              {isHost ? "Channel 생성" : "Channel 입장"}
+              {isHost ? "채널 생성" : "채널 입장"}
             </span>
           </h1>
           <p className="text-sm text-muted-foreground">
             {isTitleStep
-              ? "Channel 이름을 설정하세요."
+              ? "채널 이름을 설정하세요."
               : "사용할 닉네임과 아바타를 설정하세요."}
           </p>
         </div>
@@ -102,11 +100,11 @@ export function ChannelJoinView({ channelId, isHost }: ChannelJoinViewProps) {
               htmlFor="channel-title"
               className="text-xs font-medium text-muted-foreground"
             >
-              Channel 이름 (선택)
+              채널 이름 (선택)
             </Label>
             <Input
               id="channel-title"
-              placeholder="Channel 이름을 입력하세요"
+              placeholder="채널 이름을 입력하세요"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               maxLength={30}
@@ -142,7 +140,7 @@ export function ChannelJoinView({ channelId, isHost }: ChannelJoinViewProps) {
             disabled={isJoining}
             className="h-12 w-full gap-2 bg-primary-gradient text-base hover:brightness-110"
           >
-            {isHost ? "Channel 생성" : "Channel 입장"}
+            {isHost ? "채널 생성" : "채널 입장"}
             {isJoining ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (

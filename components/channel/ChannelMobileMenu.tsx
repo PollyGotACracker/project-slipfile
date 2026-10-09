@@ -62,7 +62,7 @@ export function ChannelMobileMenu({
         <Separator />
         <div className="flex h-16 items-center justify-between px-4">
           <span className="text-sm font-medium text-muted-foreground">
-            Channel 공유
+            채널 공유
           </span>
           <ShareDialog shareUrl={shareUrl} />
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +14,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { removeParticipantSession } from "@/utils/participant";
 
 export function LeaveButton() {
   const router = useRouter();
+  const { channelId } = useParams<{ channelId: string }>();
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function handleLeave() {
+    setError(null);
+    try {
+      removeParticipantSession(channelId.toUpperCase());
+      router.push("/");
+    } catch {
+      setError("참여자 세션을 삭제하지 못했습니다. 다시 시도해 주세요.");
+    }
+  }
 
   useEffect(() => {
     // 브라우저 뒤로 가기로 Channel을 바로 벗어나지 못하도록 가드 히스토리를 쌓아두고,
@@ -44,14 +57,19 @@ export function LeaveButton() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Channel을 나가시겠어요?</DialogTitle>
+          <DialogTitle>채널을 나가시겠어요?</DialogTitle>
           <DialogDescription>
             연결이 종료되고 진행 중인 전송이 모두 중단됩니다.
           </DialogDescription>
         </DialogHeader>
+        {error && (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        )}
         <DialogFooter className="gap-2">
           <DialogClose render={<Button variant="outline" />}>취소</DialogClose>
-          <Button variant="destructive" onClick={() => router.push("/")}>
+          <Button variant="destructive" onClick={handleLeave}>
             나가기
           </Button>
         </DialogFooter>

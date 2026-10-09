@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ChannelView } from "@/components/channel/ChannelView";
-import { MOCK_CHANNEL_TITLE } from "@/utils/channel";
 
 const CHANNEL_ID_PATTERN = /^[A-Z0-9]{4,8}$/;
 
@@ -10,7 +9,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { channelId } = await props.params;
   return {
-    title: MOCK_CHANNEL_TITLE ?? `Channel ${channelId.toUpperCase()}`,
+    title: `Channel ${channelId.toUpperCase()}`,
     robots: { index: false, follow: false },
   };
 }
@@ -25,5 +24,5 @@ export default async function ChannelPage(
     notFound();
   }
 
-  return <ChannelView channelId={normalized} />;
+  return <ChannelView key={normalized} channelId={normalized} />;
 }
