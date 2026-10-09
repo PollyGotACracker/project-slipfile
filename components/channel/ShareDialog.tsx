@@ -31,9 +31,9 @@ export function ShareDialog({ shareUrl }: ShareDialogProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Channel 공유</DialogTitle>
+          <DialogTitle>채널 공유</DialogTitle>
           <DialogDescription>
-            링크가 있는 사람은 Channel이 열려 있는 동안
+            링크가 있는 사람은 채널이 열려 있는 동안
             <br />
             언제든 참여할 수 있습니다.
           </DialogDescription>

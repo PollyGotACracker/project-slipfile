@@ -44,7 +44,7 @@ export function LeaveButton() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Channel을 나가시겠어요?</DialogTitle>
+          <DialogTitle>채널을 나가시겠어요?</DialogTitle>
           <DialogDescription>
             연결이 종료되고 진행 중인 전송이 모두 중단됩니다.
           </DialogDescription>

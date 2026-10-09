@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ConnectionBanner } from "@/components/channel/ConnectionStatus";
 import { HostScreenPanel } from "@/components/channel/HostScreenPanel";
@@ -12,51 +12,15 @@ import { ChannelEnded } from "@/components/channel/ChannelEnded";
 import { ChannelSkeleton } from "@/components/channel/ChannelSkeleton";
 import { ChannelTopBar } from "@/components/channel/ChannelTopBar";
 import { TransferSidebar } from "@/components/channel/TransferRegion";
+import { Button } from "@/components/ui/button";
+import { connectChannel, type ChannelSessionState } from "@/supabase/realtime";
 import { useParticipantSession } from "@/utils/participant";
-import {
-  MOCK_CHANNEL_TITLE,
-  getChannelJoinPath,
-  getChannelPath,
-} from "@/utils/channel";
-import type { ConnectionState } from "@/types/channel";
+import { getChannelJoinPath, getChannelPath } from "@/utils/channel";
 import type { ChatMessage } from "@/types/message";
-import type { Participant } from "@/types/participant";
 
 interface ChannelViewProps {
   channelId: string;
 }
-
-// TODO: 목데이터. 실제 게스트·연결 상태는 Supabase Presence/WebRTC 연동 후 대체한다.
-const CONNECTION_STATE: ConnectionState = "connected";
-// TODO: 호스트 이탈 실시간 감지가 붙기 전까지 UI 확인용으로 수동 토글하는 목 플래그.
-const HOST_LEFT = false;
-
-const MOCK_OTHER_PARTICIPANTS: Participant[] = [
-  {
-    id: "p2",
-    nickname: "정우",
-    isHost: false,
-    isSelf: false,
-    status: "online",
-    avatarIndex: 3,
-  },
-  {
-    id: "p3",
-    nickname: "서현",
-    isHost: false,
-    isSelf: false,
-    status: "pending",
-    avatarIndex: 7,
-  },
-  {
-    id: "p4",
-    nickname: "민준",
-    isHost: false,
-    isSelf: false,
-    status: "offline",
-    avatarIndex: 11,
-  },
-];
 
 // TODO: 목데이터. 실제 채팅 메시지는 WebRTC DataChannel 연동 후 대체한다.
 const MOCK_CHAT_MESSAGES: ChatMessage[] = [
@@ -91,6 +55,12 @@ const MOCK_CHAT_MESSAGES: ChatMessage[] = [
 
 export function ChannelView({ channelId }: ChannelViewProps) {
   const router = useRouter();
+  const [channelState, setChannelState] = useState<ChannelSessionState>({
+    connection: "connecting",
+    participants: [],
+    isEnded: false,
+    error: null,
+  });
   const { resolved, session: participantSession } =
     useParticipantSession(channelId);
 
@@ -101,6 +71,40 @@ export function ChannelView({ channelId }: ChannelViewProps) {
     }
   }, [resolved, participantSession, channelId, router]);
 
+  useEffect(() => {
+    if (!participantSession) return;
+    let isActive = true;
+    try {
+      const disconnect = connectChannel(
+        channelId,
+        participantSession,
+        (state) => {
+          if (isActive) setChannelState(state);
+        },
+      );
+      return () => {
+        isActive = false;
+        void disconnect().catch(console.error);
+      };
+    } catch (error) {
+      queueMicrotask(() => {
+        if (!isActive) return;
+        setChannelState({
+          connection: "failed",
+          participants: [],
+          isEnded: false,
+          error:
+            error instanceof Error
+              ? error.message
+              : "채널 연결에 실패했습니다.",
+        });
+      });
+      return () => {
+        isActive = false;
+      };
+    }
+  }, [channelId, participantSession]);
+
   if (!participantSession) {
     return <ChannelSkeleton />;
   }
@@ -109,41 +113,49 @@ export function ChannelView({ channelId }: ChannelViewProps) {
     ? "host"
     : "participant";
 
-  const selfParticipant: Participant = {
-    id: participantSession.participantId,
-    nickname: participantSession.nickname,
-    isHost: role === "host",
-    isSelf: true,
-    status: "online",
-    avatarIndex: participantSession.avatarIndex,
-  };
-  const participants: Participant[] = [
-    selfParticipant,
-    ...MOCK_OTHER_PARTICIPANTS,
-  ];
+  const participants = channelState.participants;
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const shareUrl = `${siteUrl}${getChannelPath(channelId)}`;
 
-  if (HOST_LEFT) {
+  if (channelState.isEnded) {
     return <ChannelEnded />;
+  }
+
+  if (channelState.error) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+        <p role="alert" className="text-sm text-destructive">
+          {channelState.error}
+        </p>
+        <Button onClick={() => router.replace("/")}>홈으로 돌아가기</Button>
+      </div>
+    );
   }
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
       <ChannelTopBar
-        title={MOCK_CHANNEL_TITLE}
+        title={channelState.title}
         shareUrl={shareUrl}
-        connection={CONNECTION_STATE}
+        connection={channelState.connection}
         role={role}
       />
-      <ConnectionBanner state={CONNECTION_STATE} />
+      <ConnectionBanner state={channelState.connection} />
 
       <div className="flex min-h-0 w-full flex-1">
         <TransferSidebar role={role} />
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="min-h-0 flex-1">
-            <HostScreenPanel role={role} />
+            {channelState.connection === "connected" ? (
+              <HostScreenPanel
+                role={role}
+                channelId={channelId}
+                session={participantSession}
+              />
+            ) : (
+              <ChannelSkeleton />
+            )}
           </div>
           <ParticipantsMain
             participants={participants}
