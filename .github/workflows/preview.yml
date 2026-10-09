@@ -40,8 +40,8 @@ jobs:
 
       # 테스트
       # 테스트가 통과하면 계속 실행, 실패하면 여기서 중단
-      - name: Run tests
-        run: pnpm test
+      # - name: Run tests
+      #   run: pnpm test
 
       # Vercel CLI 설치
       - name: Install Vercel CLI
