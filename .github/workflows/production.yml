@@ -28,8 +28,6 @@ jobs:
       # pnpm 설치 (pnpm/action-setup)
       - name: Install pnpm
         uses: pnpm/action-setup@v5
-        with:
-          version: 10
 
       # Node.js 환경 설정 (pnpm 캐싱 사용)
       - name: Setup Node.js
